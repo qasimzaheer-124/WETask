@@ -1,0 +1,59 @@
+﻿@page "/"
+@using Assignment124.Data
+
+@inject DataContext _db
+
+<PageTitle>Index</PageTitle>
+
+
+<EditForm Model="@student" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Student Name:</label>
+    <InputText id="name" @bind-Value="student.StudentName" class="form-control" />
+    <br />
+    <label for="major">Major:</label>
+    <InputText id="major" @bind-Value="student.Major" class="form-control" />
+    <label for="standing">Standing:</label>
+    <InputText id="standing" @bind-Value="student.Standing" class="form-control" />
+    <br />
+    <button type="submit">Submit</button>
+</EditForm>
+
+<table>
+    <tbody>
+        <tr>
+            <th>Student Id</th>
+            <th>Student Name</th>
+            <th>Major</th>
+            <th>Standing</th>
+        </tr>
+        @foreach (var stu in students)
+        {
+            <tr>
+                <td>@stu.StudentId</td>
+                <td>@stu.StudentName</td>
+                <td>@stu.Major</td>
+                <td>@stu.Standing</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    Student student = new Student();
+
+    List<Student> students = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        students = _db.Students.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        _db.Add(student);
+        _db.SaveChangesAsync();
+    }
+}

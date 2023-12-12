@@ -1,0 +1,76 @@
+﻿@page "/quries"
+@using Assignment124.Data
+@inject DataContext _db
+
+<h3>Quries Results</h3>
+
+
+@if (Morethan100 != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Class Name</th>
+                <th>Room Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Morethan100)
+            {
+                <tr>
+                    <td>@x.ClassName</td>
+                    <td>@x.RoomNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No classes with more than 100 students found.</p>
+}
+
+
+
+<h3>Students with No Classes in Department 22</h3>
+
+@if (Noclasses != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Major</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Noclasses)
+            {
+                <tr>
+                    <td>@x.StudentId</td>
+                    <td>@x.Major</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No students found who take no classes with teachers in department 22.</p>
+}
+
+@code {
+    List<Class> Morethan100 = new List<Class>();
+    List<Student> Noclasses = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        // Call a method to retrieve class information with more than 100 students
+        Morethan100 = _db.Classes.Where(c => _db.Enroll.Count(x => x.ClassId == c.ClassId) > 100).ToList();
+        Noclasses = _db.Students.Where(s => !_db.Enroll
+                .Join(_db.Classes, e => e.ClassId, c => c.ClassId, (e, c) => new { e, c })
+                .Join(_db.Faculty, ec => ec.c.FacultyId, f => f.FacultyId, (ec, f) => new { ec, f })
+                .Any(joined => joined.f.DeptId == 22 && joined.ec.e.StudentId == s.StudentId)).ToList();
+    }
+
+}

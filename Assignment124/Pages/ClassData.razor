@@ -1,0 +1,57 @@
+﻿@page "/classdata"
+@using Assignment124.Data
+@inject DataContext _db
+
+
+<EditForm Model="@cls" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Class Name:</label>
+    <InputText id="name" @bind-Value="cls.ClassName" class="form-control" />
+    <br />
+    <label for="roomnum">Room number:</label>
+    <InputNumber id="roomnum" @bind-Value="cls.RoomNumber" class="form-control" />
+    <br />
+    <label for="facultyid">Faculty Id:</label>
+    <InputNumber id="facultyid" @bind-Value="cls.FacultyId" class="form-control" />
+    <br />
+    <input type="submit" name="Submit" />
+</EditForm>
+
+<table>
+    <tbody>
+        <tr>
+            <th>Class Id</th>
+            <th>Class Name</th>
+            <th>Room number</th>
+            <th>Faculty Id</th>
+        </tr>
+        @foreach (var c in classes)
+        {
+            <tr>
+                <td>@c.ClassId</td>
+                <td>@c.ClassName</td>
+                <td>@c.RoomNumber</td>
+                <td>@c.FacultyId</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    Class cls = new Class();
+
+    List<Class> classes = new List<Class>();
+
+    protected override void OnInitialized()
+    {
+        classes = _db.Classes.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        _db.Add(cls);
+        _db.SaveChangesAsync();
+    }
+}

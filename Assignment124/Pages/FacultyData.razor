@@ -1,0 +1,58 @@
+﻿@page "/facultydata"
+@using Assignment124.Data
+@inject DataContext _db
+
+<PageTitle>Faculty</PageTitle>
+
+
+<EditForm Model="@faculty" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Faculty Name:</label>
+    <InputText id="name" @bind-Value="faculty.FacultyName" class="form-control" />
+    <br />
+    <label for="dept">Department Id:</label>
+    <InputNumber id="dept" @bind-Value="faculty.DeptId" class="form-control" />
+    <label for="standing">Standing:</label>
+    <InputText id="standing" @bind-Value="faculty.Standing" class="form-control" />
+    <br />
+    <input type="submit" name="Submit" />
+</EditForm>
+
+<table>
+    <tbody>
+        <tr>
+            <th>Faculty Id</th>
+            <th>Faculty Name</th>
+            <th>DeptId</th>
+            <th>Standing</th>
+        </tr>
+        @foreach (var fal in facultys)
+        {
+            <tr>
+                <td>@fal.FacultyId</td>
+                <td>@fal.FacultyName</td>
+                <td>@fal.DeptId</td>
+                <td>@fal.Standing</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    Faculty faculty = new Faculty();
+
+    List<Faculty> facultys = new List<Faculty>();
+
+    protected override void OnInitialized()
+    {
+        facultys = _db.Faculty.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        _db.Add(faculty);
+        _db.SaveChangesAsync();
+    }
+}
